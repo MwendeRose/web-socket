@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    #output {
+      border: 1px solid #ddd;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      background: #fff;
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+    input {
+      width: 80%;
+      margin-right: 10px;
+    }
+    button {
+      width: 15%;
+    }
+  </style>
+</head>
+<body>
+  <h1>WebSocket Chat</h1>
+  <div id="output"></div>
+  <input type="text" id="messageInput" placeholder="Enter your message" />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    // Create WebSocket connection
+    const socket = new WebSocket('ws://localhost:8080');
+
+    // Output div for displaying messages
+    const output = document.getElementById('output');
+
+    // Add event listeners for WebSocket events
+    socket.addEventListener('open', () => {
+      addMessage('Connected to WebSocket server');
+    });
+
+    socket.addEventListener('message', (event) => {
+      addMessage(`Server: ${event.data}`);
+    });
+
+    socket.addEventListener('close', () => {
+      addMessage('Connection closed by server');
+    });
+
+    // Function to send a message
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+
+      if (message) {
+        socket.send(message);
+        addMessage(`You: ${message}`);
+        input.value = '';
+      }
+    }
+
+    // Function to add a message to the output
+    function addMessage(message) {
+      const p = document.createElement('p');
+      p.textContent = message;
+      output.appendChild(p);
+      output.scrollTop = output.scrollHeight; // Scroll to the latest message
+    }
+  </script>
+</body>
+</html>
